@@ -4,12 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 import time
+import base64
 
-st.write("# V.A.L.E.R.I.A")
+st.set_page_config(page_title="VALERIA", page_icon="val_temp.png")
 
-st.write("Vamos lá")
-
-pages = ["Home", "Diagnóstico", "Sobre"]
+pages = ["Início", "Diagnóstico", "Casos", "Sobre"]
 
 st.sidebar.image("val_temp.png", use_column_width=True)
 
@@ -18,35 +17,21 @@ pagina = st.sidebar.selectbox(
     pages
 )
 
-if (pagina == "Home"):
+if (pagina == "Início"):
 
     st.write("# Bem Vindo!")
 
     st.write("---")
 
-    st.write("### Eu sou a Valéria, a sua assistente para o diagnóstico rápido de Dengue e Chikungunya! Sou um acrônimo para *Virtual Assistant for LEarning pRocesses In Arbovirus*!")
+    st.write("### Eu sou a Valéria, a sua assistente para o diagnóstico rápido de Dengue e Chikungunya!")
 
-    st.write("Aqui, o nosso objetivo é auxiliar os profisionais de saúde para ter mais confiança na execução inicial das atividades. Espero que possamos trabalhar bem juntos!")
+    st.write("### Sou um acrônimo para *Virtual Assistant for LEarning pRocesses In Arbovirus*!")
 
-    labels = ["Suspeitos", "Confirmados"]
-    dengue_casos = [1317746, 1008013]
-    chika_casos = [63368, 39634]
+    st.write("Aqui, o nosso objetivo é auxiliar os profisionais de saúde para ter mais confiança no diagnóstico inicial dos pacientes. Espero que possamos trabalhar bem juntos!")
 
-    fig_dengue, ax_dengue = plt.subplots()
-    ax_dengue.pie(dengue_casos, labels=labels, autopct="%1.1f%%", startangle=90)
-    plt.title("Casos de Dengue nas Américas em 2020")
-    ax_dengue.axis('equal')
+    st.write("---")
 
-    fig_chika, ax_chika = plt.subplots()
-    ax_chika.pie(chika_casos, labels=labels, autopct="%1.1f%%", startangle=90)
-    plt.title("Casos de Chikungunya nas Américas em 2020")
-    ax_chika.axis('equal')
-
-    st.write("A confirmação de casos das arboviroses é um problema presente em todas as Américas. Como é possível observar nos gráficos abaixo, a taxa de confirmação dos casos está abaixo de 50%.")
-
-    st.pyplot(fig_dengue, clear_figure=True)
-
-    st.pyplot(fig_chika)
+    st.write("Para realizar o seu diagnóstico inicial, acesse a barra de menu no canto esquerdo e escolha a opção **Diagnóstico**")
 
 elif (pagina == "Diagnóstico"):
 
@@ -66,31 +51,33 @@ elif (pagina == "Diagnóstico"):
 
         DIAS = st.number_input("Quantos dias está sentindo os sintomas?", min_value=0, format="%d")
 
-        FEBRE = Checkbox(st.checkbox("Febre?"))
+        st.write ("Informe os sintomas:")
 
-        MIALGIA = Checkbox(st.checkbox("Mialgia?"))
+        FEBRE = Checkbox(st.checkbox("Febre"))
 
-        CEFALEIA = Checkbox(st.checkbox("Cefaleia?"))
+        MIALGIA = Checkbox(st.checkbox("Mialgia", help="Dor muscular"))
 
-        EXANTEMA = Checkbox(st.checkbox("Exantema?"))
+        CEFALEIA = Checkbox(st.checkbox("Cefaleia", help="Dor de cabeça"))
 
-        NAUSEA = Checkbox(st.checkbox("Náusea?"))
+        EXANTEMA = Checkbox(st.checkbox("Exantema", help="Manchas vermelhas em um região"))
 
-        DOR_COSTAS = Checkbox(st.checkbox("Dor nas costas?"))
+        NAUSEA = Checkbox(st.checkbox("Náusea"))
 
-        CONJUNTVIT = Checkbox(st.checkbox("Conjutivite?"))
+        DOR_COSTAS = Checkbox(st.checkbox("Dor nas costas"))
 
-        ARTRITE = Checkbox(st.checkbox("Artrite?"))
+        CONJUNTVIT = Checkbox(st.checkbox("Conjutivite"))
 
-        ARTRALGIA = Checkbox(st.checkbox("Artralgia?"))
+        ARTRITE = Checkbox(st.checkbox("Artrite", help="Inflamação das articulações"))
 
-        PETEQUIA_N = Checkbox(st.checkbox("Petéquias?"))
+        ARTRALGIA = Checkbox(st.checkbox("Artralgia", help="Dor nas articulações"))
 
-        DOR_RETRO = Checkbox(st.checkbox("Dor ao redor dos olhos?"))
+        PETEQUIA_N = Checkbox(st.checkbox("Petéquias", help="Pequenas manchas vermelhas ou marrom que surgem geralmente aglomeradas, mais frequentemente nos braços, pernas ou barriga"))
 
-        DIABETES = Checkbox(st.checkbox("Diabetes?"))
+        DOR_RETRO = Checkbox(st.checkbox("Dor Retroorbital", help="Dor ao redor dos olhos"))
 
-        HIPERTENSA = Checkbox(st.checkbox("Hipertensão?"))
+        DIABETES = Checkbox(st.checkbox("Diabetes", help=""))
+
+        HIPERTENSA = Checkbox(st.checkbox("Hipertensão", help=""))
 
         if (st.form_submit_button("Realizar Diagnóstico")):
 
@@ -116,16 +103,84 @@ elif (pagina == "Diagnóstico"):
                 prob = model.predict_proba(dados)
 
             doencas = ["CHIKUNGUNYA", "DENGUE", "OUTRAS_DOENCAS"]
-            doencas_texto = ["Chikungunya", "Dengue", "Negativo"]
+            doencas_texto = ["Chikungunya", "Dengue", "Inconclusivo"]
 
             for count, value in enumerate(doencas):
                 if (value == doenca):
                     d = doencas_texto[count]
                     p = prob[0][count]
-            st.write(f'O resultado do diagnóstico foi {d} com uma taxa de confiança de {p:.2%}')
+            st.write(f'O resultado do diagnóstico foi **{d}**')
+
+            res_df = pd.DataFrame(prob, columns=doencas_texto, index=["Probabilidade"])
+
+            df_style = res_df.style.format(
+                {'Dengue':'{:.2%}',
+                'Chikungunya':'{:.2%}',
+                'Inconclusivo':'{:.2%}'}
+            )
+
+
+            st.write("Abaixo é possível obersar o resultados detalhado do diagnóstico:")
+            st.dataframe(df_style)
+
+            st.write("**AVISO: Este diagnóstico não substitui a avaliação médica, procure o postinho mais próximo!**")
+
+elif (pagina == "Casos"):
+
+    st.write("Abaixo você pode analisar a quantidade de casos de Dengue e Chikungunya no Brasil com o passar dos anos, bem como a quantidade de casos suspeitos/inclonclusivos dessas doenças")
+
+    """### Quantidade de casos de Dengue entre 2013 e 2020"""
+    file_ = open("dengue.gif", "rb")
+    contents = file_.read()
+    data_url = base64.b64encode(contents).decode("utf-8")
+    file_.close()
+    st.markdown(
+        f'<img src="data:image/gif;base64,{data_url}" alt="gif">',
+        unsafe_allow_html=True,
+    )
+
+    """### Quantidade de casos de Chikungunya entre 2015 e 2020"""
+    file_ = open("chika.gif", "rb")
+    contents = file_.read()
+    data_url = base64.b64encode(contents).decode("utf-8")
+    file_.close()
+    st.markdown(
+        f'<img src="data:image/gif;base64,{data_url}" alt="gif">',
+        unsafe_allow_html=True,
+    )
+
+    """### Quantidade de casos suspeitos/inclonclusivos entre 2013 e 2020"""
+    file_ = open("outros.gif", "rb")
+    contents = file_.read()
+    data_url = base64.b64encode(contents).decode("utf-8")
+    file_.close()
+    st.markdown(
+        f'<img src="data:image/gif;base64,{data_url}" alt="gif">',
+        unsafe_allow_html=True,
+    )
+
+    st.write("---")
+
+    st.write("Dados coletados no Sistema de Informação de Agravos de Notificação (SINAN)")
 
 elif (pagina == "Sobre"):
 
-    st.write("Este Sistema foi desenvolvido pelo grupo de Pesquisa DotLAB Brasil!")
+    st.write("## Realização")
 
-    st.image("DotLab.png")
+    col_1, dotlab_col, col_3 = st.columns(3)
+
+    dotlab_col.image("DotLab.png")
+
+    st.write("## Apoio")
+
+    upe_col, fmt_col = st.columns(2)
+    upe_col.image("upe.png", use_column_width=True)
+    fmt_col.image("fmt.png")
+
+    st.write("## Financiamento")
+
+    facepe_col, fapeam_col = st.columns(2)
+    facepe_col.image("facepe.png")
+    fapeam_col.image("fapeam.png")
+
+    st.balloons()
