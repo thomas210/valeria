@@ -125,4 +125,4 @@ def app():
         #             st.error("CEP inválido")
 
         st.write("---")
-        st.warning("**AVISO: Este diagnóstico não é definitivo, analise também a situação epidemiológica da sua cidade.**")
+        st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")
