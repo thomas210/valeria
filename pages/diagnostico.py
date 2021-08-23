@@ -98,31 +98,31 @@ def app():
         )
         st.dataframe(df_style)
 
-        if diagnostico != doencas_texto[2]:
-            st.write("---")
-            cep = st.text_input("Informe seu CEP para buscar a Unidade de Saúde mais próxima:", max_chars=cep_max_size)
-
-            if st.button("Buscar"):
-                try:
-                    cep_valido = re.search(cep_regex, cep)
-
-                    if cep_valido:
-                        with st.spinner('Por favor, aguarde...'):
-                            cep_response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
-                            cep_json = cep_response.json()
-
-                        cidade = cep_json['localidade']
-                        bairro = cep_json['bairro']
-                        uf = cep_json['uf']
-
-                        str_to_encode = f'Unidade Básica de Saude, {bairro}, {cidade}, {uf}'
-                        encoded = urllib.parse.quote(str_to_encode.encode("utf-8"))
-                        st.write(
-                            f"## Link para buscar a Unidades de Saúde: [clique aqui](https://www.google.com/maps/search/?api=1&query={encoded})")
-                    else:
-                        raise Exception("CEP inválido")
-                except:
-                    st.error("CEP inválido")
+        # if diagnostico != doencas_texto[2]:
+        #     st.write("---")
+        #     cep = st.text_input("Informe seu CEP para buscar a Unidade de Saúde mais próxima:", max_chars=cep_max_size)
+        #
+        #     if st.button("Buscar"):
+        #         try:
+        #             cep_valido = re.search(cep_regex, cep)
+        #
+        #             if cep_valido:
+        #                 with st.spinner('Por favor, aguarde...'):
+        #                     cep_response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+        #                     cep_json = cep_response.json()
+        #
+        #                 cidade = cep_json['localidade']
+        #                 bairro = cep_json['bairro']
+        #                 uf = cep_json['uf']
+        #
+        #                 str_to_encode = f'Unidade Básica de Saude, {bairro}, {cidade}, {uf}'
+        #                 encoded = urllib.parse.quote(str_to_encode.encode("utf-8"))
+        #                 st.write(
+        #                     f"## Link para buscar a Unidades de Saúde: [clique aqui](https://www.google.com/maps/search/?api=1&query={encoded})")
+        #             else:
+        #                 raise Exception("CEP inválido")
+        #         except:
+        #             st.error("CEP inválido")
 
         st.write("---")
-        st.warning("**AVISO: Este diagnóstico não substitui a avaliação médica, procure o postinho mais próximo!**")
+        st.warning("**AVISO: Este diagnóstico não é definitivo, analise também a situação epidemiológica da sua cidade.**")
