@@ -1,6 +1,6 @@
 import streamlit as st
 
-from pages import inicio, diagnostico, casos, ajuda, sobre
+from pages import inicio, diagnostico, casos, ajuda, sobre, modelo
 from pages.page_manager import PageManager
 
 app = PageManager()
@@ -12,5 +12,6 @@ app.add_page("Diagnóstico", diagnostico.app)
 app.add_page("Casos", casos.app)
 app.add_page("Ajuda", ajuda.app)
 app.add_page("Sobre", sobre.app)
+app.add_page("Modelo", modelo.app)
 
 app.run()
