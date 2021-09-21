@@ -7,6 +7,8 @@ import requests
 import streamlit as st
 
 
+import lime.lime_tabular
+
 def app():
     cep_max_size = 8
     cep_regex = "\d{8}"
@@ -97,6 +99,66 @@ def app():
              'Inconclusivo': '{:.2%}'}
         )
         st.dataframe(df_style)
+
+        cols= [
+            "FEBRE", "MIALGIA", "CEFALEIA", "EXANTEMA", "NAUSEA", "DOR_COSTAS",
+            "CONJUNTVIT", "ARTRITE", "ARTRALGIA", "PETEQUIA_N", "DOR_RETRO",
+            "DIABETES", "HIPERTENSA", "DIAS", "CLASSI_FIN"
+        ]
+
+        df = pd.read_csv(
+            st.secrets["path_database"],
+            sep=";",
+            usecols=cols
+        )
+
+        X = df.drop("CLASSI_FIN", axis=1).to_numpy()
+        y = df.CLASSI_FIN.to_numpy()
+
+        from sklearn.model_selection import train_test_split
+        train, test, labels_train, labels_test = train_test_split(X, y, train_size=0.80, random_state=42)
+
+        categorical_names = [
+            "FEBRE", "MIALGIA", "CEFALEIA", "EXANTEMA", "NAUSEA", "DOR_COSTAS",
+            "CONJUNTVIT", "ARTRITE", "ARTRALGIA", "PETEQUIA_N", "DOR_RETRO",
+            "DIABETES", "HIPERTENSA"
+        ]
+
+        dados = []
+
+        dados.append([
+            FEBRE.get_value(), MIALGIA.get_value(), CEFALEIA.get_value(),
+            EXANTEMA.get_value(), NAUSEA.get_value(), DOR_COSTAS.get_value(),
+            CONJUNTVIT.get_value(), ARTRITE.get_value(), ARTRALGIA.get_value(),
+            PETEQUIA_N.get_value(), DOR_RETRO.get_value(),
+            DIABETES.get_value(), HIPERTENSA.get_value(), DIAS
+        ])
+
+        st.write(cols)
+
+        dados_df = pd.DataFrame(dados, columns=cols)
+        st.write(dados_df)
+
+        '''explainer = lime.lime_tabular.LimeTabularExplainer(
+            df.drop("CLASSI_FIN", axis=1).to_numpy(),
+            feature_names=cols.remove("CLASSI_FIN"),
+            class_names=df.CLASSI_FIN.unique(),
+            categorical_features=[0,1,2,3,4,5,6,7,8,9,10,11,12],
+            categorical_names=categorical_names,
+            kernel_width=3,
+            verbose=True
+        )
+
+        exp = explainer.explain_instance(
+            X[1],
+            model.predict_proba,
+            num_features=14,
+            top_labels=3
+        )
+
+        # st.write(exp.as_list(label=0))
+        st.write(test[1])
+        st.write(pd.DataFrame(dados).T.to_numpy())'''
 
         # if diagnostico != doencas_texto[2]:
         #     st.write("---")
