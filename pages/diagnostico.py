@@ -1,128 +1,59 @@
 import pickle
-import re
-import urllib.parse
+
+from models.paciente import Paciente
 
 import pandas as pd
-import requests
 import streamlit as st
 
 
 def app():
-    cep_max_size = 8
-    cep_regex = "\d{8}"
-
-    diagnostico_key = 'diagnostico'
-    prob_key = 'prob'
-
-    doencas = ["CHIKUNGUNYA", "DENGUE", "OUTRAS_DOENCAS"]
-    doencas_texto = ["Chikungunya", "Dengue", "Inconclusivo"]
-
-    class Checkbox:
-        def __init__(self, value):
-            self.value = value
-
-        def get_value(self):
-            if self.value:
-                res = 1
-            else:
-                res = 2
-            return res
 
     st.write("## Preencha os campos com as informações para realizar o diagnóstico:")
 
-    DIAS = st.number_input("Quantos dias está sentindo os sintomas?", min_value=0, format="%d")
+    with st.form("diagnostico_form"):
 
-    st.write("Informe os sintomas:")
+        paciente = Paciente()
 
-    FEBRE = Checkbox(st.checkbox("Febre"))
+        paciente.setDias(st.number_input("Quantos dias está sentindo os sintomas?", min_value=0, format="%d"))
 
-    MIALGIA = Checkbox(st.checkbox("Mialgia", help="Dor muscular"))
+        st.write("Informe os sintomas:")
 
-    CEFALEIA = Checkbox(st.checkbox("Cefaleia", help="Dor de cabeça"))
+        paciente.setFebre(st.checkbox("Febre"))
 
-    EXANTEMA = Checkbox(st.checkbox("Exantema", help="Manchas vermelhas em um região"))
+        paciente.setMialgia(st.checkbox("Mialgia", help="Dor muscular"))
 
-    NAUSEA = Checkbox(st.checkbox("Náusea"))
+        paciente.setCefaleia(st.checkbox("Cefaleia", help="Dor de cabeça"))
 
-    DOR_COSTAS = Checkbox(st.checkbox("Dor nas costas"))
+        paciente.setExantema(st.checkbox("Exantema", help="Manchas vermelhas em um região"))
 
-    CONJUNTVIT = Checkbox(st.checkbox("Conjutivite"))
+        paciente.setNausea(st.checkbox("Náusea"))
 
-    ARTRITE = Checkbox(st.checkbox("Artrite", help="Inflamação das articulações"))
+        paciente.setDorCostas(st.checkbox("Dor nas costas"))
 
-    ARTRALGIA = Checkbox(st.checkbox("Artralgia", help="Dor nas articulações"))
+        paciente.setConjuntvit(st.checkbox("Conjutivite"))
 
-    PETEQUIA_N = Checkbox(st.checkbox("Petéquias",
-                                      help="Pequenas manchas vermelhas ou marrom que surgem geralmente aglomeradas, mais frequentemente nos braços, pernas ou barriga"))
+        paciente.setArtrite(st.checkbox("Artrite", help="Inflamação das articulações"))
 
-    DOR_RETRO = Checkbox(st.checkbox("Dor Retroorbital", help="Dor ao redor dos olhos"))
+        paciente.setArtralgia(st.checkbox("Artralgia", help="Dor nas articulações"))
 
-    st.write("Informe as comorbidades prévias:")
+        paciente.setPetequia(st.checkbox("Petéquias", help="Pequenas manchas vermelhas ou marrom que surgem geralmente aglomeradas, mais frequentemente nos braços, pernas ou barriga"))
 
-    DIABETES = Checkbox(st.checkbox("Diabetes", help=""))
+        paciente.setDorRetro(st.checkbox("Dor Retroorbital", help="Dor ao redor dos olhos"))
 
-    HIPERTENSA = Checkbox(st.checkbox("Hipertensão", help=""))
+        st.write("Informe as comorbidades prévias:")
 
-    if st.button("Realizar Diagnóstico"):
+        paciente.setDiabetes(st.checkbox("Diabetes", help=""))
 
-        dados = [[
-            FEBRE.get_value(), MIALGIA.get_value(), CEFALEIA.get_value(),
-            EXANTEMA.get_value(), NAUSEA.get_value(), DOR_COSTAS.get_value(),
-            CONJUNTVIT.get_value(), ARTRITE.get_value(), ARTRALGIA.get_value(),
-            PETEQUIA_N.get_value(), DOR_RETRO.get_value(),
-            DIABETES.get_value(), HIPERTENSA.get_value(), DIAS
-        ]]
+        paciente.setHipertensao(st.checkbox("Hipertensão", help=""))
 
-        with open('gradient_model.pkl', 'rb') as f:
-            model = pickle.load(f)
-            doenca = model.predict(dados)[0]
-            st.session_state[prob_key] = model.predict_proba(dados)
+        if (st.form_submit_button("Realizar Diagnóstico")):
 
-        for count, value in enumerate(doencas):
-            if value == doenca:
-                st.session_state[diagnostico_key] = doencas_texto[count]
+            resultado, probabilidades_df = paciente.diagnostico()
 
-        st.session_state['form_submetido'] = True
+            st.write(f'## O resultado do diagnóstico foi **{resultado}**')
 
-    if 'form_submetido' in st.session_state:
-        st.write("---")
-        diagnostico = st.session_state[diagnostico_key]
-        st.write(f'## O resultado do diagnóstico foi **{diagnostico}**')
+            st.write("Abaixo é possível observar o resultado detalhado do diagnóstico:")
+            st.dataframe(probabilidades_df)
 
-        st.write("Abaixo é possível observar o resultado detalhado do diagnóstico:")
-        res_df = pd.DataFrame(st.session_state[prob_key], columns=doencas_texto, index=["Probabilidade"])
-        df_style = res_df.style.format(
-            {'Dengue': '{:.2%}',
-             'Chikungunya': '{:.2%}',
-             'Inconclusivo': '{:.2%}'}
-        )
-        st.dataframe(df_style)
-
-        # if diagnostico != doencas_texto[2]:
-        #     st.write("---")
-        #     cep = st.text_input("Informe seu CEP para buscar a Unidade de Saúde mais próxima:", max_chars=cep_max_size)
-        #
-        #     if st.button("Buscar"):
-        #         try:
-        #             cep_valido = re.search(cep_regex, cep)
-        #
-        #             if cep_valido:
-        #                 with st.spinner('Por favor, aguarde...'):
-        #                     cep_response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
-        #                     cep_json = cep_response.json()
-        #
-        #                 cidade = cep_json['localidade']
-        #                 bairro = cep_json['bairro']
-        #                 uf = cep_json['uf']
-        #
-        #                 str_to_encode = f'Unidade Básica de Saude, {bairro}, {cidade}, {uf}'
-        #                 encoded = urllib.parse.quote(str_to_encode.encode("utf-8"))
-        #                 st.write(
-        #                     f"## Link para buscar a Unidades de Saúde: [clique aqui](https://www.google.com/maps/search/?api=1&query={encoded})")
-        #             else:
-        #                 raise Exception("CEP inválido")
-        #         except:
-        #             st.error("CEP inválido")
-
-        st.write("---")
-        st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")
+            st.write("---")
+            st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")
