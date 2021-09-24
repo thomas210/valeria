@@ -1,7 +1,7 @@
 import pickle
 import pandas as pd
 
-class Diagnostico:
+class Paciente:
 
 
     def __init__(self, FEBRE, MIALGIA, CEFALEIA, EXANTEMA, NAUSEA, DOR_COSTAS, CONJUNTVIT, ARTRITE, ARTRALGIA, PETEQUIA_N, DOR_RETRO, DIABETES, HIPERTENSA, DIAS):
@@ -36,7 +36,7 @@ class Diagnostico:
             "DIABETES", "HIPERTENSA", "DIAS"
         ]
 
-    def realizar(self):
+    def diagnostico(self):
         """
         Realizacao do dianostico
         O modelo e carregado e a classificacao e realizada
@@ -56,6 +56,52 @@ class Diagnostico:
                 columns=["Porcentagem"]
             )
             return self.saidas[classificacao], prob_df
+
+    #Sets#
+
+    def setFebre (self, value):
+        self.FEBRE = value
+
+    def setMialgia (self, value):
+        self.MIALGIA = value
+
+    def setCefaleia (self, value):
+        self.CEFALEIA = value
+
+    def setExantema (self, value):
+        self.EXANTEMA = value
+
+    def setNausea (self, value):
+        self.NAUSEA = value
+
+    def setDorCostas (self, value):
+        self.DOR_COSTAS = value
+
+    def setConjuntvit (self, value):
+        self.CONJUNTVIT = value
+
+    def setArtrite (self, value):
+        self.ARTRITE = value
+
+    def setArtralgia (self, value):
+        self.ARTRALGIA = value
+
+    def setPetequia (self, value):
+        self.PETEQUIA_N = value
+
+    def setDorRetro (self, value):
+        self.DOR_RETRO = value
+
+    def setDiabetes (self, value):
+        self.DIABETES = value
+
+    def setHipertensao (self, value):
+        self.HIPERTENSA = value
+
+    def setDias (self, value):
+        self.DIAS = value
+
+
     
     #Gets#
     
