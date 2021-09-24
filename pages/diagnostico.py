@@ -1,9 +1,5 @@
-import pickle
-
-from models.paciente import Paciente
-
-import pandas as pd
 import streamlit as st
+from models.paciente import Paciente
 
 
 def app():
