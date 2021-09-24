@@ -1,28 +1,30 @@
 import pickle
 import pandas as pd
 
+'''
+Model de Paciente, dentro desta classe e armazenado os dados do paciente e
+e realizado o diagnostico do mesmo, com a utilizacao de um model de ML
+'''
+
 class Paciente:
 
-
-    def __init__(self, FEBRE, MIALGIA, CEFALEIA, EXANTEMA, NAUSEA, DOR_COSTAS, CONJUNTVIT, ARTRITE, ARTRALGIA, PETEQUIA_N, DOR_RETRO, DIABETES, HIPERTENSA, DIAS):
-        """
-        Inicializador da classe, e necessario passar todos os atributos na ordem para serem armazenados
-        Alem disso, tambem sao setados as saidas possiveis do models e as labels(colunas do base)
-        """
-        self.FEBRE = FEBRE
-        self.MIALGIA = MIALGIA
-        self.CEFALEIA = CEFALEIA
-        self.EXANTEMA = EXANTEMA
-        self.NAUSEA = NAUSEA
-        self.DOR_COSTAS = DOR_COSTAS
-        self.CONJUNTVIT = CONJUNTVIT
-        self.ARTRITE = ARTRITE
-        self.ARTRALGIA = ARTRALGIA
-        self.PETEQUIA_N = PETEQUIA_N
-        self.DOR_RETRO = DOR_RETRO
-        self.DIABETES = DIABETES
-        self.HIPERTENSA = HIPERTENSA
-        self.DIAS = DIAS
+    def __init__(self):
+        '''
+        construtor da classe
+        sao definidos de acordo com o modelo de ML
+        saidas
+            Correspondencia da saida do modelo ML
+            com o que será visualizado no front
+        categorical_labels
+            inputs categoricos(binarios) do modelo
+        numerical_labels
+            inputs numericos do modelo
+        labels
+            todas os inputs do modelo
+            E NECESSARIO ESTAR NA MESMA ORDEM NO MODELO
+        path_model_ml
+            caminho onde o modelo de ml esta no projeto
+        '''
 
         self.saidas = {
             "CHIKUNGUNYA": "Chikungunya",
@@ -30,11 +32,19 @@ class Paciente:
             "OUTRAS_DOENCAS": "Inconclusivo"
         }
 
-        self.labels = [
+        self.categorical_labels = [
             "FEBRE", "MIALGIA", "CEFALEIA", "EXANTEMA", "NAUSEA", "DOR_COSTAS",
             "CONJUNTVIT", "ARTRITE", "ARTRALGIA", "PETEQUIA_N", "DOR_RETRO",
-            "DIABETES", "HIPERTENSA", "DIAS"
+            "DIABETES", "HIPERTENSA"
         ]
+
+        self.numerical_labels = [
+            "DIAS"
+        ]
+
+        self.labels = self.categorical_labels + self.numerical_labels
+
+        self.path_model_ml = "ml\\gradient_model.pkl"
 
     def diagnostico(self):
         """
@@ -44,7 +54,7 @@ class Paciente:
             ->Doenca calssifcada, formatada
             ->Dataframe com a porcentagem de cada doenca para visualizacao
         """
-        with open("D:\mestrado\\valeria_v1\gradient_model.pkl", "rb") as f:
+        with open(self.path_model_ml, "rb") as f:
             model = pickle.load(f)
             dados = self.getFicha()
             classificacao = model.predict(dados)[0]
@@ -57,7 +67,7 @@ class Paciente:
             )
             return self.saidas[classificacao], prob_df
 
-    #Sets#
+    #Seters#
 
     def setFebre (self, value):
         self.FEBRE = value
@@ -103,16 +113,17 @@ class Paciente:
 
 
     
-    #Gets#
+    #Geters#
     
     def getLabels(self):
         return self.labels
 
     def getFicha(self):
         """
-        Get para retornar os dados do diagnostico
+        Get para retornar os dados do paciente
+        IMPORTANTE ESTA NA MESMA ORDEM DO MODELO
         """
-        dados = [[
+        return [[
             self.FEBRE,
             self.MIALGIA,
             self.CEFALEIA,
@@ -128,5 +139,3 @@ class Paciente:
             self.HIPERTENSA,
             self.DIAS
         ]]
-
-        return dados
