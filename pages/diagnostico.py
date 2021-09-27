@@ -1,6 +1,6 @@
 import streamlit as st
 from models.paciente import Paciente
-
+import time
 
 def app():
 
@@ -44,7 +44,11 @@ def app():
 
         if (st.form_submit_button("Realizar Diagnóstico")):
 
-            resultado, probabilidades_df = paciente.diagnostico()
+            with st.spinner('Realizando diagnóstico...'):
+                # Existe um leve delay durante a classificacao do modelo, entao eu coloquei essa tela de loading
+                # Foi necessario colocar um sleep de 1 sec para poder ativar a tela de loading
+                time.sleep(1)
+                resultado, probabilidades_df = paciente.diagnostico()
 
             st.write(f'## O resultado do diagnóstico foi **{resultado}**')
 
