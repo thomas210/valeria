@@ -1,5 +1,8 @@
 import pickle
 import pandas as pd
+import numpy as np
+import lime.lime_tabular
+import streamlit as st
 
 '''
 Model de Paciente, dentro desta classe e armazenado os dados do paciente e
@@ -55,17 +58,51 @@ class Paciente:
             ->Dataframe com a porcentagem de cada doenca para visualizacao
         """
         with open(self.path_model_ml, "rb") as f:
-            model = pickle.load(f)
+            self.model = pickle.load(f)
             dados = self.getFicha()
-            classificacao = model.predict(dados)[0]
-            prob = model.predict_proba(dados)
+            self.classificacao = self.model.predict(dados)[0]
+            prob = self.model.predict_proba(dados)
 
             prob_df = pd.DataFrame(
                 ['{:.2%}'.format(i) for i in prob[0]],
                 index=self.saidas.values(),
                 columns=["Porcentagem"]
             )
-            return self.saidas[classificacao], prob_df
+            return self.saidas[self.classificacao], prob_df
+
+    def explainer(self):
+
+        path_database = st.secrets["path_database"]
+        database = pd.read_csv(path_database, sep=';', usecols=self.labels)
+
+        explainer = lime.lime_tabular.LimeTabularExplainer(
+            database.to_numpy(),
+            feature_names=self.labels,
+            class_names=self.saidas.keys(),
+            categorical_features=[count for count, value in enumerate(self.categorical_labels)],
+            categorical_names=self.categorical_labels,
+            kernel_width=3,
+            verbose=False
+        )
+
+        exp = explainer.explain_instance(
+            np.array(self.getFicha()[0]),
+            self.model.predict_proba,
+            num_features=14,
+            top_labels=3
+        )
+
+        for count, value in enumerate(self.saidas.keys()):
+            if value == self.classificacao:
+                pos_label = count
+
+        exp_dict = dict(exp.as_list(label=pos_label))
+
+        return pd.DataFrame(
+            exp_dict.values(),
+            columns=["Value"],
+            index=exp_dict.keys()
+        )
 
     #Seters#
 
