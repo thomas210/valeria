@@ -58,6 +58,7 @@ def app():
 
             st.write("Abaixo é possível o nível de importância de cada atributo para este diagnóstico:")
             st.bar_chart(explainer)
+            st.dataframe(explainer)
 
             st.write("---")
             st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")
