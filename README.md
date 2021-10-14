@@ -1,4 +1,4 @@
-# VALERIA - Virtual Assistant for Larning Processes in Arbovirus
+# VALERIA - Virtual Assistant for Learning Processes in Arbovirus
 
 ---
 
