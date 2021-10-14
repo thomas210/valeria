@@ -57,7 +57,7 @@ def app():
 
     DOR_RETRO = Checkbox(st.checkbox("Dor Retroorbital", help="Dor ao redor dos olhos"))
 
-    st.write("Informe as comorbidades prévias:")
+    st.write("Informe as condições prévias:")
 
     DIABETES = Checkbox(st.checkbox("Diabetes", help=""))
 
@@ -87,9 +87,9 @@ def app():
     if 'form_submetido' in st.session_state:
         st.write("---")
         diagnostico = st.session_state[diagnostico_key]
-        st.write(f'## O resultado do diagnóstico foi **{diagnostico}**')
+        st.write(f'## O resultado do dignóstico mais provável foi **{diagnostico}**')
 
-        st.write("Abaixo é possível observar o resultado detalhado do diagnóstico:")
+        st.write("Abaixo é possível observar o resultado detalhado do diagnóstico, informado a probabilidade de cada doença:")
         res_df = pd.DataFrame(st.session_state[prob_key], columns=doencas_texto, index=["Probabilidade"])
         df_style = res_df.style.format(
             {'Dengue': '{:.2%}',
