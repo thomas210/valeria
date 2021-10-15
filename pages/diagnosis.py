@@ -45,15 +45,17 @@ def app():
         if (st.form_submit_button("Realizar Diagnóstico")):
 
             with st.spinner('Realizando diagnóstico...'):
-                # Existe um leve delay durante a classificacao do modelo, entao eu coloquei essa tela de loading
-                # Foi necessario colocar um sleep de 1 sec para poder ativar a tela de loading
-                time.sleep(1)
                 result, probability_df = patient.diagnosis()
+                explainer  = patient.explainer()
 
             st.write(f'## O resultado do diagnóstico foi **{result}**')
 
             st.write("Abaixo é possível observar o resultado detalhado do diagnóstico:")
             st.dataframe(probability_df)
+
+            st.write("Abaixo é possível o nível de importância de cada atributo para este diagnóstico:")
+            st.bar_chart(explainer)
+            st.dataframe(explainer)
 
             st.write("---")
             st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")
