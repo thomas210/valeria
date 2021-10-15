@@ -20,18 +20,18 @@ class Patient:
         }
 
         # Inputs categóricos(binários) do modelo
-        self.categorical_labels = [
-            "FEBRE", "MIALGIA", "CEFALEIA", "EXANTEMA", "NAUSEA", "DOR_COSTAS",
-            "CONJUNTVIT", "ARTRITE", "ARTRALGIA", "PETEQUIA_N", "DOR_RETRO",
-            "DIABETES", "HIPERTENSA"
-        ]
+        self.categorical_labels = {
+            "FEBRE": "Febre", "MIALGIA": "Mialgia", "CEFALEIA": "Cefaleia", "EXANTEMA": "Exantema", "NAUSEA": "Náusea", "DOR_COSTAS": "Dor nas costas",
+            "CONJUNTVIT": "Conjuntivite", "ARTRITE": "Artrite", "ARTRALGIA": "Artralgia", "PETEQUIA_N": "Petéquias", "DOR_RETRO": "Dor Retroorbital",
+            "DIABETES": "Diabetes", "HIPERTENSA": "Hipertensão"
+        }
 
         # Inputs numéricos do modelo
-        self.numerical_labels = [
-            "DIAS"
-        ]
+        self.numerical_labels = {
+            "DIAS": "Dias"
+        }
 
-        self.labels = self.categorical_labels + self.numerical_labels
+        self.labels = dict(self.categorical_labels, **self.numerical_labels)
 
         # caminho onde está localizado o modelo de ML
         self.path_model_ml = "ml\\gradient_model.pkl"
@@ -65,11 +65,11 @@ class Patient:
         """
 
         path_database = st.secrets["path_database"]
-        database = pd.read_csv(path_database, sep=';', usecols=self.labels)
+        database = pd.read_csv(path_database, sep=';', usecols=self.labels.keys())
 
         explainer = lime.lime_tabular.LimeTabularExplainer(
             database.to_numpy(),
-            feature_names=self.labels,
+            feature_names=self.labels.keys(),
             class_names=self.outputs.keys(),
             categorical_features=[count for count, value in enumerate(self.categorical_labels)],
             categorical_names=self.categorical_labels,
@@ -87,14 +87,23 @@ class Patient:
         for count, value in enumerate(self.outputs.keys()):
             if value == self.classification:
                 pos_label = count
+                break
 
-        exp_dict = dict(exp.as_list(label=pos_label))
+        exp_dict = dict(sorted(exp.as_list(label=pos_label)))
 
-        return pd.DataFrame(
+        exp_df = pd.DataFrame(
             exp_dict.values(),
-            columns=["Value"],
-            index=exp_dict.keys()
+            columns=["Influência"],
+            # index=[value for key, value in sorted(self.labels.items())]
+            index=dict(sorted(self.labels.items())).values()
         )
+        # .sort_values(by=["Influência"], ascending=False)
+
+        exp_pos = exp_df[exp_df["Influência"] > 0]
+        exp_neg = exp_df[exp_df["Influência"] < 0]
+
+        # return exp_df
+        return exp_df, exp_pos, exp_neg
 
     # Setters
 
@@ -164,7 +173,7 @@ class Patient:
         Returns:
             list: array com todas as labels do modelo de ML
         """
-        return self.labels
+        return self.labels.keys()
 
     def getRecord(self):
         """Get para retornar a ficha médica do paciente, com todas as informações dos atributos. IMPORTANTE: É NECESSÁRIO ESTAR NA MESMA ORDEM EM QUE O MODELO DE ML FOI TREINADO

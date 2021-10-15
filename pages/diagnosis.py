@@ -1,6 +1,9 @@
 import streamlit as st
 from models.patient import Patient
-import time
+
+def highlight_values(val): 
+    color = 'green' if val > 0 else 'red' 
+    return 'color: %s' % color
 
 def app():
 
@@ -46,16 +49,22 @@ def app():
 
             with st.spinner('Realizando diagnóstico...'):
                 result, probability_df = patient.diagnosis()
-                explainer  = patient.explainer()
+                e0, e1, e2 = patient.explainer()
 
             st.write(f'## O resultado do diagnóstico foi **{result}**')
 
-            st.write("Abaixo é possível observar o resultado detalhado do diagnóstico:")
+            st.write("Abaixo é possível observar o resultado detalhado do diagnóstico, informado a probabilidade de cada doença:")
             st.dataframe(probability_df)
 
-            st.write("Abaixo é possível o nível de importância de cada atributo para este diagnóstico:")
-            st.bar_chart(explainer)
-            st.dataframe(explainer)
+            st.write("### Resultado detalhado")
+            st.write(f"Os valores abaixo buscam explicar melhor como o sistema de _machine learning_ chegou no resultado {result}. Para cada atributo foi aplicado um valor que representa o quão influente o mesmo foi para esta classificação, quanto maior o valor, mais forte foi a sua influência nesta classificação. Valores positivos estão coloridos em verde e indicam influência a favor da classificação {result}, enquanto que valores negativos estão coloridos em vermelho e indicam uma influência contrária a classificação {result}.")
+
+            st.write("Abaixo é possível analisar quais atributos influenciaram positivamente")
+            st.write
+            # st.bar_chart(explainer)
+            st.dataframe(e0.style.applymap(highlight_values))
+            st.write(e1.style.background_gradient(cmap='Greens'))
+            st.write(e2.style.background_gradient(cmap='Reds'))
 
             st.write("---")
             st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")
