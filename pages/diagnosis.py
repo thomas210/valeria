@@ -36,7 +36,7 @@ def app():
 
         patient.setEyePain(st.checkbox("Dor Retroorbital", help="Dor ao redor dos olhos"))
 
-        st.write("Informe as comorbidades prévias:")
+        st.write("Informe as condições prévias:")
 
         patient.setDiabetes(st.checkbox("Diabetes", help=""))
 
