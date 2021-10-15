@@ -19,5 +19,3 @@ def app():
     facepe_col, fapeam_col = st.columns(2)
     facepe_col.image("images/facepe.png")
     fapeam_col.image("images/fapeam.png")
-
-    st.balloons()
