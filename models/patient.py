@@ -45,17 +45,17 @@ class Patient:
         """
         
         with open(self.path_model_ml, "rb") as f:
-            model = pickle.load(f)
+            self.model = pickle.load(f)
             data = self.getRecord()
-            classification = model.predict(data)[0]
-            prob = model.predict_proba(data)
+            self.classification = self.model.predict(data)[0]
+            prob = self.model.predict_proba(data)
 
             prob_df = pd.DataFrame(
                 ['{:.2%}'.format(i) for i in prob[0]],
                 index=self.outputs.values(),
                 columns=["Porcentagem"] # Necessário em português para visualização no front
             )
-            return self.outputs[classification], prob_df
+            return self.outputs[self.classification], prob_df
 
     def explainer(self):
         """Utiliza o LIME para explicação do predição do dianóstico
@@ -84,8 +84,8 @@ class Patient:
             top_labels=3
         )
 
-        for count, value in enumerate(self.saidas.keys()):
-            if value == self.classificacao:
+        for count, value in enumerate(self.outputs.keys()):
+            if value == self.classification:
                 pos_label = count
 
         exp_dict = dict(exp.as_list(label=pos_label))
