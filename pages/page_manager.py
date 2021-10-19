@@ -34,7 +34,7 @@ class PageManager:
 
         # Dropdown to select the page to run
         page = st.sidebar.selectbox(
-            'App Navigation',
+            'Navegação',
             self.pages,
             format_func=lambda page: page['title']
         )
