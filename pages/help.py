@@ -1,5 +1,7 @@
 import streamlit as st
 
+def getName():
+    return "Ajuda"
 
 def app():
     st.write("# Ajuda")
