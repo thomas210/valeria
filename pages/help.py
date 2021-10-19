@@ -28,6 +28,10 @@ def app():
 
     st.write("Esperamos que essas informações ajudem aos médicos a entender o porquê do modelo ter feito a classificação final, e, junto com a experiência do prórpio profissional de saúde, poder oferecer um diagnóstico clínicos mais acurado.")
 
+    st.write("### Alguma informação do paciente fica salva?")
+
+    st.write("Não, atualmente a VALERIA não registra nenhuma informação acerca do paciente, todos os dados do paciente são apagados no momento em que o diagnóstico é realizado.")
+
     st.write("## Caso possua alguma dúvida a respeito da utilização da plataforma, você pode assistir ao nosso vídeo introdutório:")
 
     st.video("https://www.youtube.com/watch?v=3ipbYO4zJHo")
