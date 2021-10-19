@@ -1,4 +1,6 @@
 import streamlit as st
+from models.user import User
+from error import errorCode
 
 def getName():
     return "Ajuda"
@@ -34,4 +36,26 @@ def app():
 
     st.write("## Caso possua alguma dúvida a respeito da utilização da plataforma, você pode assistir ao nosso vídeo introdutório:")
 
+    # TODO: Atualizar o vídeo
     st.video("https://www.youtube.com/watch?v=3ipbYO4zJHo")
+
+    with st.form("contact_form"):
+
+        st.write("## Caso ainda possua alguma outra dúvida, entre em contato conosco para que possamos lhe ajudar:")
+
+        user = User()
+
+        user.setName(st.text_input("Nome:"))
+
+        user.setEmail(st.text_input("E-mail:"))
+
+        user.setMessage(st.text_area("Mensagem:"))
+
+        if (st.form_submit_button("Enviar")):
+            cod, text = user.validate()
+            if cod != errorCode.getErrors().SUCCESS.name:
+                st.error(text)
+            else:
+                with st.spinner('Enviando...'):
+                    user.sendEmail()
+                st.success("Enviado com sucesso!")
