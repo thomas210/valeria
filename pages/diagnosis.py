@@ -57,7 +57,7 @@ def app():
                 exp_pos, exp_neg = patient.explainer()
                 patient.eraseData()
 
-            st.write(f'## O resultado do diagnóstico foi **{result}**')
+            st.write(f'## O diagnóstico mais provável foi **{result}**')
 
             st.write("### Resultado detalhado")
 
