@@ -14,7 +14,7 @@ def app():
 
     st.write("Para realizar o diagnóstico mais provável do paciente, a VALERIA utliza um modelo de _machine learning_ para classificação. O modelo recebe os dados do paciente (sintomas e doenças prévias) e realiza a classificação da doença do paciente. A saída do modelo é a classificação do paciente entre umas das três classes, Dengue, Chikungunya e Inconclusivo")
 
-    st.write("Atualmente o modelo de _machine learning_ utilizado para a classificação é o _Gradient Boosting_. Para maiores informações sobre como foi realizado o experimento para desenvolvimento deste modelo, é possível analisar o artigo publicado [aqui](https://www.overleaf.com/project)*ATUALIZAR O LINK AINDA!*")
+    st.write("Atualmente o modelo de _machine learning_ utilizado para a classificação é o _Gradient Boosting_. Para maiores informações sobre como foi realizado o experimento para desenvolvimento deste modelo, é possível analisar o artigo publicado [aqui](https://www.overleaf.com/project)")
 
     st.write("### O que são os valores de porocentagem do resultado detalhado?")
 
