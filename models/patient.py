@@ -37,11 +37,11 @@ class Patient:
         self.path_model_ml = "ml\\gradient_model.pkl"
 
     def diagnosis (self):
-        """Realiza o dianóstico do paciente, utilizando os dados dos atributos para realizar a classificação pelo modelo de ML.
+        """Realiza o dianóstico do paciente, utilizando os dados dos atributos para realizar a classificação pelo modelo de ML. Basicamente, a função carrega o modelo e faz o model.predict() com os dados do paciente. Também é executado o model.predict_proba() para obter as probabilidades de cada saída do modelo.
 
         Returns:
-            string: o resultado da classificação do modelo formatado para visualização;
-            pandas.Dataframe object: dataframe contendo as probablidades de cada saída do modelo com o padrão [doença | probabilidade];
+            *string: o resultado da classificação do modelo formatado para visualização;
+            *pandas.Dataframe object: dataframe contendo as probablidades de cada saída do modelo com o padrão [doença | probabilidade];
         """
         
         with open(self.path_model_ml, "rb") as f:
@@ -58,10 +58,11 @@ class Patient:
             return self.outputs[self.classification], prob_df
 
     def explainer(self):
-        """Utiliza o LIME para explicação do predição do dianóstico.
+        """Utiliza o LIME para explicação do predição do dianóstico. A base de dados de treinamento é usado para preparar o LIME, então os dados do paciente são inseridos para obtenção dos pesos para cada atributo. Por fim, os dados são anexados em um dataframe contendo o resutlado do paciente para cada atributo e o seu respectivo peso.
 
         Returns:
-            pandas.Dataframe object: Dataframe contendo o valor de importância para cada atributo, seguinto o padrão [value] com cada atributo como index.
+            * pandas.Dataframe object: Dataframe contendo o valor do peso de cada atributo positivo, index=Atributo header = [Resultado, Valor].
+            * pandas.Dataframe object: Dataframe contendo o valor do peso de cada atributo negativo, index=Atributo header = [Resultado, Valor].
         """
 
         # O Explainer necessita da base de dados de treinamento para conseguir calcular os pesos, para se ter um certo nível de segurança, eu coloquei o caminho da base de dados no secrets do streamlit para que funciona como um ".env" no nosso projeto.
@@ -85,26 +86,41 @@ class Patient:
             top_labels=3
         )
 
+        # For para saber a posição da saída, infelizmente não consegui fazer isso de uma forma mais elegante.
         for count, value in enumerate(self.outputs.keys()):
             if value == self.classification:
                 pos_label = count
                 break
 
-        exp_dict = dict(sorted(exp.as_list(label=pos_label)))
+        # As saídas do explainer são inseridas em um dict para que possam ser convertidas em um dataframe posteriormente.
+        exp_dict = sorted(dict(exp.as_map()[pos_label]).items())
 
-        # TODO: ver com o pessoal se é melhor deixar "Peso" ou "Influência" mesmo.
-        # TODO: SE POSSÍVEL, analisar depois uma foram simples para pegar o valor de intervalo do atributo "Dias", no explainer é usado um intervalo, tipo "DIAS >= 2", na conversão essa informação se perde, e ela pode ser bem interessante.
         exp_df = pd.DataFrame(
-            exp_dict.values(),
-            columns=["Peso"],
-            # index=[value for key, value in sorted(self.labels.items())]
-            index=dict(sorted(self.labels.items())).values()
-        ).sort_values(by=["Peso"], ascending=False)
+            exp_dict,
+            columns=["key", "Valor"],
+            index=self.labels.values()
+        )
 
-        exp_pos = exp_df[exp_df["Peso"] > 0]
-        exp_neg = exp_df[exp_df["Peso"] < 0]
+        # A coluna de resultado contém as informações do paciente, a saída do as_map() do explainer está na mesma ordem da entrada dos atributos, e consequentemente o método getRecord() da classe também esta na mesma ordem, não sendo necessário ordenar antes de unificar.
+        exp_df["Resultado"] = np.array(self.getRecord()[0])
 
-        # return exp_df
+        # Necessário converter o tipo da coluna para poder modificar o valor livremente. Para uma melhor visualização, as colunas boolenasa foram convertidas para um resultado de "Sim" ou "Não".
+        exp_df["Resultado"] = exp_df["Resultado"].astype(str)
+        for attribute in self.categorical_labels.values():
+            exp_df.loc[(exp_df.index == attribute) & (exp_df["Resultado"] == "0"), "Resultado"] = "Não"
+            exp_df.loc[(exp_df.index == attribute) & (exp_df["Resultado"] == "1"), "Resultado"] = "Sim"
+
+        # Para uma melhor visualização, o valor do peso foi multiplicado por 100.
+        exp_df["Valor"] = exp_df["Valor"].apply(lambda x: x * 100)
+
+        exp_df = exp_df[["Resultado", "Valor"]]
+
+        exp_pos = exp_df[exp_df["Valor"] > 0].sort_values(by=["Valor"], ascending=False)
+        exp_neg = exp_df[exp_df["Valor"] < 0].sort_values(by=["Valor"], ascending=True)
+
+        # Para uma melhor visualização, o valor do peso foi multiplicado por -1 para não ficar negativo.
+        exp_neg["Valor"] = exp_neg["Valor"].apply(lambda x: x * (-1))
+
         return exp_pos, exp_neg
 
     # TODO: Ver com o pessoal se isso aqui é realmente necessário.

@@ -1,10 +1,5 @@
 import streamlit as st
 from models.patient import Patient
-# from pages import help
-
-# def highlight_values(val): 
-#     color = 'green' if val > 0 else 'red' 
-#     return 'color: %s' % color
 
 def app():
 
@@ -57,30 +52,28 @@ def app():
                 exp_pos, exp_neg = patient.explainer()
                 patient.eraseData()
 
-            st.write(f'## O diagnóstico mais provável foi **{result}**')
+            st.write(f'## A sugestão da VALERIA é **{result}**')
 
             st.write("### Resultado detalhado")
 
             st.write(f"Abaixo é possível observar o resultado detalhado do diagnóstico. Caso haja alguma dúvida sobre como esses valores foram gerados, você pode consultar a tela de Ajuda no canto esquerdo.")
 
             st.write("#### Probabilidade de cada doença")
-            st.dataframe(probability_df)
+            st.dataframe(probability_df.sort_values(by=["Porcentagem"], ascending=False))
 
-            # Eu tirei essa explicação daqui pq coloquei na tela de ajuda, com a ideia de ficar mais clean essa tela
-
-            # st.write(f"Os valores abaixo buscam explicar melhor como o sistema de _machine learning_ chegou no resultado {result}. Para cada atributo foi aplicado um valor que representa o quão influente o mesmo foi para esta classificação, quanto maior o valor, mais forte foi a sua influência nesta classificação. Valores positivos estão coloridos em verde e indicam influência a favor da classificação {result}, enquanto que valores negativos estão coloridos em vermelho e indicam uma influência contrária a classificação {result}. Para mais informações sobre como esse número é gerado, você pode consultar a tela de {help.getName()} no canto esquerdo.")
-
-            st.write("#### Peso de cada atributo para este diagnóstico provável")
-
-            # st.dataframe(e0.style.applymap(highlight_values))
+            st.write("#### Peso de cada atributo para este resultado")
 
             col_pos, col_neg = st.columns(2)
 
             col_pos.write(f"Atributos que contribuíram para o resutlado {result}")
-            col_pos.dataframe((exp_pos.style.background_gradient(cmap='Greens')))
+            col_pos.dataframe(exp_pos.style.format({'Valor':'{:.2f}'}).bar(color='Green'))
+            # Caso queiram remover a coluna "Valor"
+            # col_pos.dataframe(exp_pos)
 
             col_neg.write(f"Atributos que não contribuíram para o resultado {result}")
-            col_neg.dataframe((exp_neg.style.background_gradient(cmap='Reds')))
+            col_neg.dataframe(exp_neg.style.format({'Valor':'{:.2f}'}).bar(color='Red'))
+            # Caso queiram remover a coluna "Valor"
+            # col_neg.dataframe(exp_neg)
 
             st.write("---")
             st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")
