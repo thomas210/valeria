@@ -27,7 +27,7 @@ def app():
 
         patient.setBackPain(col_symptoms_1.checkbox("Dor nas costas"))
 
-        patient.setConjunctivitis(col_symptoms_2.checkbox("Conjutivite"))
+        patient.setConjunctivitis(col_symptoms_2.checkbox("Conjuntivite"))
 
         patient.setArthritis(col_symptoms_2.checkbox("Artrite", help="Inflamação das articulações"))
 
@@ -45,18 +45,18 @@ def app():
 
         patient.setHypertension(col_comorbidities_2.checkbox("Hipertensão", help=""))
 
-        if (st.form_submit_button("Realizar Diagnóstico")):
+        if (st.form_submit_button("Obter sugestão da VALERIA")):
 
-            with st.spinner('Realizando diagnóstico...'):
+            with st.spinner("Processando..."):
                 result, probability_df = patient.diagnosis()
                 exp_pos, exp_neg = patient.explainer()
                 patient.eraseData()
 
-            st.write(f'## A sugestão da VALERIA é **{result}**')
+            st.write(f"## A sugestão da VALERIA é **{result}**")
 
             st.write("### Resultado detalhado")
 
-            st.write(f"Abaixo é possível observar o resultado detalhado do diagnóstico. Caso haja alguma dúvida sobre como esses valores foram gerados, você pode consultar a tela de Ajuda no canto esquerdo.")
+            st.write(f"Abaixo é possível observar o resultado detalhado. Caso haja alguma dúvida sobre como esses valores foram gerados, você pode consultar a tela de Ajuda no canto esquerdo.")
 
             st.write("#### Probabilidade de cada doença")
             st.dataframe(probability_df.sort_values(by=["Porcentagem"], ascending=False))
@@ -65,13 +65,13 @@ def app():
 
             col_pos, col_neg = st.columns(2)
 
-            col_pos.write(f"Atributos que contribuíram para o resutlado {result}")
-            col_pos.dataframe(exp_pos.style.format({'Valor':'{:.2f}'}).bar(color='Green'))
+            col_pos.write(f"Atributos que contribuíram para o resultado {result}")
+            col_pos.dataframe(exp_pos.style.format({'Valor':'{:.2f}'}).bar(color="Green"))
             # Caso queiram remover a coluna "Valor"
             # col_pos.dataframe(exp_pos)
 
             col_neg.write(f"Atributos que não contribuíram para o resultado {result}")
-            col_neg.dataframe(exp_neg.style.format({'Valor':'{:.2f}'}).bar(color='Red'))
+            col_neg.dataframe(exp_neg.style.format({'Valor':'{:.2f}'}).bar(color="Red"))
             # Caso queiram remover a coluna "Valor"
             # col_neg.dataframe(exp_neg)
 
