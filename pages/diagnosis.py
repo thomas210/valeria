@@ -3,7 +3,7 @@ from models.patient import Patient
 
 def app():
 
-    st.write("## Preencha os campos com as informações do paciente para realizar o diagnóstico:")
+    st.write("## Preencha os campos com as informações do paciente para obter o resultado:")
 
     with st.form("diagnostico_form"):
 
@@ -45,14 +45,14 @@ def app():
 
         patient.setHypertension(col_comorbidities_2.checkbox("Hipertensão", help=""))
 
-        if (st.form_submit_button("Obter sugestão da VALERIA")):
+        if (st.form_submit_button("Resultado")):
 
             with st.spinner("Processando..."):
                 result, probability_df = patient.diagnosis()
                 exp_pos, exp_neg = patient.explainer()
                 patient.eraseData()
 
-            st.write(f"## A sugestão da VALERIA é **{result}**")
+            st.write(f"## O resultado mais provável é **{result}**")
 
             st.write("### Resultado detalhado")
 
@@ -66,14 +66,10 @@ def app():
             col_pos, col_neg = st.columns(2)
 
             col_pos.write(f"Atributos que contribuíram para o resultado {result}")
-            col_pos.dataframe(exp_pos.style.format({'Valor':'{:.2f}'}).bar(color="Green"))
-            # Caso queiram remover a coluna "Valor"
-            # col_pos.dataframe(exp_pos)
+            col_pos.dataframe(exp_pos)
 
             col_neg.write(f"Atributos que não contribuíram para o resultado {result}")
-            col_neg.dataframe(exp_neg.style.format({'Valor':'{:.2f}'}).bar(color="Red"))
-            # Caso queiram remover a coluna "Valor"
-            # col_neg.dataframe(exp_neg)
+            col_neg.dataframe(exp_neg)
 
             st.write("---")
             st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")

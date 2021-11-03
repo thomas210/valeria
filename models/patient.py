@@ -113,13 +113,12 @@ class Patient:
         # Para uma melhor visualização, o valor do peso foi multiplicado por 100.
         exp_df["Valor"] = exp_df["Valor"].apply(lambda x: x * 100)
 
-        exp_df = exp_df[["Resultado", "Valor"]]
-
         exp_pos = exp_df[exp_df["Valor"] > 0].sort_values(by=["Valor"], ascending=False)
         exp_neg = exp_df[exp_df["Valor"] < 0].sort_values(by=["Valor"], ascending=True)
 
-        # Para uma melhor visualização, o valor do peso foi multiplicado por -1 para não ficar negativo.
-        exp_neg["Valor"] = exp_neg["Valor"].apply(lambda x: x * (-1))
+        # Pegar apenas o resutlado do paciente
+        exp_pos = exp_pos[["Resultado"]]
+        exp_neg = exp_neg[["Resultado"]]
 
         return exp_pos, exp_neg
 
