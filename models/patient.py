@@ -34,7 +34,7 @@ class Patient:
         self.labels = dict(self.categorical_labels, **self.numerical_labels)
 
         # caminho onde está localizado o modelo de ML.
-        self.path_model_ml = "ml\\gradient_model.pkl"
+        self.path_model_ml = "ml/gradient_model.pkl"
 
     def diagnosis (self):
         """Realiza o dianóstico do paciente, utilizando os dados dos atributos para realizar a classificação pelo modelo de ML. Basicamente, a função carrega o modelo e faz o model.predict() com os dados do paciente. Também é executado o model.predict_proba() para obter as probabilidades de cada saída do modelo.
