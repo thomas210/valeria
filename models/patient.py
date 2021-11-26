@@ -28,7 +28,7 @@ class Patient:
 
         # Inputs numéricos do modelo
         self.numerical_labels = {
-            "DIAS": "Dias"
+            "DIAS": "Período dos sintomas"
         }
 
         self.labels = dict(self.categorical_labels, **self.numerical_labels)
@@ -102,13 +102,13 @@ class Patient:
         )
 
         # A coluna de resultado contém as informações do paciente, a saída do as_map() do explainer está na mesma ordem da entrada dos atributos, e consequentemente o método getRecord() da classe também esta na mesma ordem, não sendo necessário ordenar antes de unificar.
-        exp_df["Resultado"] = np.array(self.getRecord()[0])
+        exp_df["Resposta do Paciente"] = np.array(self.getRecord()[0])
 
         # Necessário converter o tipo da coluna para poder modificar o valor livremente. Para uma melhor visualização, as colunas boolenasa foram convertidas para um resultado de "Sim" ou "Não".
-        exp_df["Resultado"] = exp_df["Resultado"].astype(str)
+        exp_df["Resposta do Paciente"] = exp_df["Resposta do Paciente"].astype(str)
         for attribute in self.categorical_labels.values():
-            exp_df.loc[(exp_df.index == attribute) & (exp_df["Resultado"] == "0"), "Resultado"] = "Não"
-            exp_df.loc[(exp_df.index == attribute) & (exp_df["Resultado"] == "1"), "Resultado"] = "Sim"
+            exp_df.loc[(exp_df.index == attribute) & (exp_df["Resposta do Paciente"] == "0"), "Resposta do Paciente"] = "Não"
+            exp_df.loc[(exp_df.index == attribute) & (exp_df["Resposta do Paciente"] == "1"), "Resposta do Paciente"] = "Sim"
 
         # Para uma melhor visualização, o valor do peso foi multiplicado por 100.
         exp_df["Valor"] = exp_df["Valor"].apply(lambda x: x * 100)
@@ -117,8 +117,8 @@ class Patient:
         exp_neg = exp_df[exp_df["Valor"] < 0].sort_values(by=["Valor"], ascending=True)
 
         # Pegar apenas o resutlado do paciente
-        exp_pos = exp_pos[["Resultado"]]
-        exp_neg = exp_neg[["Resultado"]]
+        exp_pos = exp_pos[["Resposta do Paciente"]]
+        exp_neg = exp_neg[["Resposta do Paciente"]]
 
         return exp_pos, exp_neg
 

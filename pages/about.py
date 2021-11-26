@@ -5,14 +5,14 @@ def app():
 
     st.write("# Sobre")
 
-    st.write("A VALERIA foi desenvolvida pelos alunos do Programa de Pós Graduação em Engenharia da Computação (PPGEC) da Universidade de Pernambuco (UPE) que fazem parte do grupo de pesquisa dotLAB Brazil, sob a orientação da Prof. D.ra Patricia Takako Endo, também do grupo de pesquisa e do PPGEC. Além disso, o projeto foi feito em parceria com o Prof. D.r Vanderson de Souza Sampaio, da Fundação de Medicina Tropical Doutor Heitor Vieira Dourado (FMT).")
+    st.write("A VALERIA foi desenvolvida pelos alunos do Programa de Pós Graduação em Engenharia da Computação (PPGEC) da Universidade de Pernambuco (UPE) que fazem parte do grupo de pesquisa dotLAB Brazil, sob a orientação da Profa. Dra. Patricia Takako Endo, também do grupo de pesquisa e do PPGEC. Além disso, o projeto é desenvolvido em parceria com o Prof. Dr. Vanderson de Souza Sampaio, da Fundação de Medicina Tropical Doutor Heitor Vieira Dourado (FMT).")
 
     st.write("## Equipe")
-    st.write("- [Thomás Tabosa de Oliveira](http://lattes.cnpq.br/0487004776163889) - Aluno de Mestrado")
-    st.write("- [M.e Sebastião Rogério da Silva Neto](http://lattes.cnpq.br/5589837708731892) - Aluno de Doutorado")
-    st.write("- [Igor Vitor Teixera](http://lattes.cnpq.br/7616014062895959) - Aluno de Mestrado")
-    st.write("- [Dr.ra Patricia Takako Endo](http://lattes.cnpq.br/5055727404635243) - Professora do PPGEC, orientação")
-    st.write("- [D.r Vanderson de Souza Sampaio](http://lattes.cnpq.br/0039836167659650) - Professor da FMT, orientação")
+    st.write("- [Thomás Tabosa de Oliveira](http://lattes.cnpq.br/0487004776163889) - Aluno de Mestrado do PPGEC")
+    st.write("- [Me. Sebastião Rogério da Silva Neto](http://lattes.cnpq.br/5589837708731892) - Aluno de Doutorado do PPGEC")
+    st.write("- [Igor Vitor Teixera](http://lattes.cnpq.br/7616014062895959) - Aluno de Mestrado do PPGEC")
+    st.write("- [Dra. Patricia Takako Endo](http://lattes.cnpq.br/5055727404635243) - Professora do PPGEC")
+    st.write("- [Dr. Vanderson de Souza Sampaio](http://lattes.cnpq.br/0039836167659650) - Professor da FMT")
     
     st.write("## Recursos")
 

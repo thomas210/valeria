@@ -61,15 +61,8 @@ def app():
             st.write("#### Probabilidade de cada doença")
             st.dataframe(probability_df.sort_values(by=["Porcentagem"], ascending=False))
 
-            st.write("#### Peso de cada atributo para este resultado")
-
-            col_pos, col_neg = st.columns(2)
-
-            col_pos.write(f"Atributos que contribuíram para o resultado {result}")
-            col_pos.dataframe(exp_pos)
-
-            col_neg.write(f"Atributos que não contribuíram para o resultado {result}")
-            col_neg.dataframe(exp_neg)
+            st.write(f"Atributos que contribuíram para o resultado {result}")
+            st.dataframe(exp_pos)
 
             st.write("---")
             st.warning("**AVISO IMPORTANTE: este resultado é proveniente de um modelo de _machine learning_, não é definitivo. Analise também a situação epidemiológica da sua região.**")
