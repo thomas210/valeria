@@ -30,7 +30,7 @@ def app():
 
     st.write("Para auxiliar os profissionais de saúde com mais informações, nós também resolvemos inserir esse resultado mais detalhado. Então, o profissional de saúde pode utilizar essas informações para entender o quadro geral do paciente e observar o nível de confiança que o modelo possui em relação ao resultado informado.")
 
-    st.write("### Alguma informação do paciente fica salva?.")
+    st.write("### Alguma informação do paciente fica salva?")
 
     st.write("Não. Atualmente a VALERIA não armazena nenhuma informação acerca do paciente. Todos os dados são apagados no momento em que o modelo apresenta o resultado.")
 
