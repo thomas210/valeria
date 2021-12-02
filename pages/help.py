@@ -36,8 +36,7 @@ def app():
 
     st.write("## Caso possua alguma dúvida a respeito da utilização da plataforma, você pode assistir ao nosso vídeo introdutório:")
 
-    # TODO: Atualizar o vídeo
-    st.video("https://www.youtube.com/watch?v=3ipbYO4zJHo")
+    st.video("https://www.youtube.com/watch?v=-egcW70C7EY")
 
     with st.form("contact_form"):
 
