@@ -5,7 +5,7 @@ def app():
 
     st.write("## Preencha os campos com as informações do paciente para obter o resultado:")
 
-    with st.form("diagnostico_form"):
+    with st.form("diagnostico_form", clear_on_submit=True):
 
         patient = Patient()
 

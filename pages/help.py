@@ -39,7 +39,7 @@ def app():
     # TODO: Atualizar o vídeo
     st.video("https://www.youtube.com/watch?v=3ipbYO4zJHo")
 
-    with st.form("contact_form"):
+    with st.form("contact_form", clear_on_submit=True):
 
         st.write("## Caso ainda possua alguma outra dúvida, entre em contato conosco para que possamos lhe ajudar:")
 
