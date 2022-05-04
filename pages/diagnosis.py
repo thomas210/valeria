@@ -50,7 +50,6 @@ def app():
             with st.spinner("Processando..."):
                 result, probability_df = patient.diagnosis()
                 exp_pos, exp_neg = patient.explainer()
-                patient.eraseData()
 
             st.write(f"## O resultado mais provável é **{result}**")
 

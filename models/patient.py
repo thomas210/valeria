@@ -1,3 +1,6 @@
+# from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from datetime import datetime
 import pickle
 import pandas as pd
 import numpy as np
@@ -11,6 +14,8 @@ class Patient:
     def __init__(self):
         """Construtor da classe, inicialização das labels e definição do caminho para o modelo de ML.
         """
+        
+        self.engine = create_engine('mysql://upecaruaru01:l3g3nd4ry@mysql.upecaruaru.com.br:3306/upecaruaru01') # connect to server
 
         #Saídas formatadas do modelo para visualização no front.
         self.outputs = {
@@ -49,6 +54,8 @@ class Patient:
             data = self.getRecord()
             self.classification = self.model.predict(data)[0]
             prob = self.model.predict_proba(data)
+            
+            self.saveData()
 
             prob_df = pd.DataFrame(
                 ['{:.2%}'.format(i) for i in prob[0]],
@@ -122,25 +129,24 @@ class Patient:
 
         return exp_pos, exp_neg
 
-    # TODO: Ver com o pessoal se isso aqui é realmente necessário.
-    def eraseData(self):
-        """Método para limpeza dos dados do paciente, com isso todas as informações da ficha clínica do paciente são apagadas do sistema
+    def saveData(self):
         """
+        > It takes the data from the form, adds the classification and timestamp, and saves it to the
+        database
+        """
+        
+        data = self.getRecord()
+        
+        # Getting the current date and time
+        dt = datetime.now()
 
-        self.fever = None
-        self.myalgia = None
-        self.headache = None
-        self.rash = None
-        self.nausea = None
-        self.backPain = None
-        self.conjunctivitis = None
-        self.arthritis = None
-        self.arthralgia = None
-        self.petechia = None
-        self.eyaPain = None
-        self.diabetes = None
-        self.hypertension = None
-        self.days = None
+        # getting the timestamp
+        ts = datetime.timestamp(dt)
+        
+        data_df = pd.DataFrame(data=data, columns=self.labels)
+        data_df["CLASSI_FIN"] = self.classification
+        data_df["timestamp"] = pd.to_datetime(ts, unit='s')
+        data_df.to_sql("consultas", self.engine, index=False, if_exists="append")
 
 
     # Setters.
