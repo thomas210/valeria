@@ -16,7 +16,8 @@ def app():
 
     # TODO: Quando o artigo for publicado inserir o link para o mesmo.
     st.write("Atualmente, o modelo de machine learning utilizado para a classificação é o _Gradient Boosting_, o mesmo já possui o registro expedido pelo INPI Brasil - Instituto Nacional da Propriedade Industrial, sob o número de procedimento [BR 51 2021 002710-8](http://revistas.inpi.gov.br/pdf/Programa_de_computador2655.pdf).")
-    # Para maiores informações sobre como o modelo foi configurado e avaliado, veja o artigo publicado [aqui](https://doi.org/10.5753/webmedia_estendido.2021.17623).
+    
+    st.write("Para maiores informações sobre como o modelo foi configurado e avaliado, veja o artigo publicado [aqui](https://www.frontiersin.org/articles/10.3389/fitd.2021.769968/full).")
 
     st.write("### O que são os valores de porcentagem do resultado detalhado?")
 

@@ -1,4 +1,5 @@
 # from flask_sqlalchemy import SQLAlchemy
+from email import message
 from sqlalchemy import create_engine
 from datetime import datetime
 import pickle
@@ -6,6 +7,7 @@ import pandas as pd
 import numpy as np
 import lime.lime_tabular
 import streamlit as st
+import requests
 
 class Patient:
     """Classe de Paciente, responsável por armazenar os dados do paciente e realizar o dianóstico do mesmo, com a utilização de um model de ML.
@@ -55,7 +57,17 @@ class Patient:
             self.classification = self.model.predict(data)[0]
             prob = self.model.predict_proba(data)
             
-            self.saveData()
+            try:
+                self.saveData()
+            except Exception as error:
+                message = "💀 Ocorreu um erro ao enviar a mensagem para o servidor! 💥"
+                bot_token = st.secrets["telegram_token"]
+                bot_chatID = st.secrets["chat_id"]
+                send_text = f"https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={bot_chatID}&text={message}"
+                requests.get(send_text)
+                
+                send_text = f"https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={bot_chatID}&text={error}"
+                requests.get(send_text)
 
             prob_df = pd.DataFrame(
                 ['{:.2%}'.format(i) for i in prob[0]],
