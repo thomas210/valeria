@@ -37,7 +37,7 @@ class User:
             Devido ao fato de tecnologia atual, a mensagem é enviada pelo bot VALERIA para o nosso grupo no telegram.
         """
 
-        initial_message = "Olá pessoal, temos um usuário que deseja ajuda no nosso sistema e infelizmente não fui capaz de ajudar. Por favor, resposndam ele o quanot antes!"
+        initial_message = "Olá pessoal, temos um usuário que deseja ajuda no nosso sistema e infelizmente não fui capaz de ajudar. Por favor, respondam ele o quanto antes!"
         message = f"👨‍💻👩‍💻 Autor: {self.name} \n ✉️ E-mail para contato: {self.email} \n 📄 Mesagem: {self.message}"
         bot_token = st.secrets["telegram_token"]
         bot_chatID = st.secrets["chat_id"]
