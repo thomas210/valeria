@@ -17,7 +17,11 @@ class Patient:
         """Construtor da classe, inicialização das labels e definição do caminho para o modelo de ML.
         """
         
-        self.engine = create_engine('mysql://upecaruaru01:l3g3nd4ry@mysql.upecaruaru.com.br:3306/upecaruaru01') # connect to server
+        # self.engine = create_engine('mysql://upecaruaru01:l3g3nd4ry@mysql.upecaruaru.com.br:3306/upecaruaru01') # connect to server
+        password = st.secrets["password"]
+        link = st.secrets["link"]
+        username = st.secrets["username"]
+        self.engine = create_engine(f'mysql://{username}:{password}@{link}:3306/{username}') # connect to server
 
         #Saídas formatadas do modelo para visualização no front.
         self.outputs = {
@@ -45,7 +49,6 @@ class Patient:
 
     def diagnosis (self):
         """Realiza o dianóstico do paciente, utilizando os dados dos atributos para realizar a classificação pelo modelo de ML. Basicamente, a função carrega o modelo e faz o model.predict() com os dados do paciente. Também é executado o model.predict_proba() para obter as probabilidades de cada saída do modelo.
-
         Returns:
             *string: o resultado da classificação do modelo formatado para visualização;
             *pandas.Dataframe object: dataframe contendo as probablidades de cada saída do modelo com o padrão [doença | probabilidade];
@@ -57,8 +60,15 @@ class Patient:
             self.classification = self.model.predict(data)[0]
             prob = self.model.predict_proba(data)
             
+            message = "📋 Mais um diagnóstico realizado com sucesso! ✅"
+            bot_token = st.secrets["telegram_token"]
+            bot_chatID = st.secrets["chat_id"]
+            send_text = f"https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={bot_chatID}&text={message}"
+            requests.get(send_text)
+            
             try:
                 self.saveData()
+                
             except Exception as error:
                 message = "💀 Ocorreu um erro ao enviar a mensagem para o servidor! 💥"
                 bot_token = st.secrets["telegram_token"]
@@ -78,7 +88,6 @@ class Patient:
 
     def explainer(self):
         """Utiliza o LIME para explicação do predição do dianóstico. A base de dados de treinamento é usado para preparar o LIME, então os dados do paciente são inseridos para obtenção dos pesos para cada atributo. Por fim, os dados são anexados em um dataframe contendo o resutlado do paciente para cada atributo e o seu respectivo peso.
-
         Returns:
             * pandas.Dataframe object: Dataframe contendo o valor do peso de cada atributo positivo, index=Atributo header = [Resultado, Valor].
             * pandas.Dataframe object: Dataframe contendo o valor do peso de cada atributo negativo, index=Atributo header = [Resultado, Valor].
@@ -225,7 +234,6 @@ class Patient:
     
     def getLabels(self):
         """Método get para obter todas as labels utlizada no modelo de ML.
-
         Returns:
             list: array com todas as labels do modelo de ML.
         """
@@ -233,7 +241,6 @@ class Patient:
 
     def getRecord(self):
         """Get para retornar a ficha médica do paciente, com todas as informações dos atributos. IMPORTANTE: É NECESSÁRIO ESTAR NA MESMA ORDEM EM QUE O MODELO DE ML FOI TREINADO.
-
         Returns:
             list: array dos os valores dos atributos do paciente.
         """
