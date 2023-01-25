@@ -154,7 +154,10 @@ class Patient:
         """
         > It takes the data from the form, adds the classification and timestamp, and saves it to the
         database
+        TODO: ERROR WITH DB, SO JUST RETURN
         """
+        
+        return 0
         
         data = self.getRecord()
         
